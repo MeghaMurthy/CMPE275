@@ -97,6 +97,8 @@ public class FileOps implements Storage {
 			byte[] bs = doc.getChunkContent().toByteArray();
 			String docName = doc.getDocName();
 			System.out.println(namespace+"<  :::> "+  bs.length      +" <:::  >"+docName);
+			File file = new File(namespace);
+			file.mkdirs();
 			FileOutputStream fos = new FileOutputStream(namespace+"/"+docName);
 			fos.write(bs);
 			fos.close();

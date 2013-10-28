@@ -148,31 +148,28 @@ public class ClientConnection {
 			ns.setId(10L);
 			ns.setOwner("Ameya");
 			ns.setName(nameSpace);
-			ns.build();
 
 			Document.Builder d= eye.Comm.Document.newBuilder();
-			
 			d.setChunkContent(ByteString.copyFrom(FileUtil.read(new File(filePath))));
 			d.setDocName(filePath);
 //			System.out.println("Document Name --> "+d.getDocName());
 			d.setId(1000L);
-			d.build();
 
 			// payload containing data
-			Request.Builder r = Request.newBuilder();
 			eye.Comm.Payload.Builder p = Payload.newBuilder();
 			p.setSpace(ns.build());
 			p.setDoc(d.build());
-			r.setBody(p.build());
-
-
+			
 			// header with routing info
 			eye.Comm.Header.Builder h = Header.newBuilder();
-			h.setOriginator("Client 1");
-			h.setTag("Test Document");
+			h.setOriginator("client");
+			h.setTag("document upload");
 			h.setTime(System.currentTimeMillis());
 			h.setRoutingId(eye.Comm.Header.Routing.DOCADD);
+			
+			Request.Builder r = Request.newBuilder();
 			r.setHeader(h.build());
+			r.setBody(p.build());
 
 			eye.Comm.Request req = r.build();
 

@@ -38,6 +38,7 @@ public class ClientPrintListener implements ClientListener {
 		}
 		else {
 			System.out.println("===============================================================");
+			System.out.println(msg);
 			for (int i = 0, I = msg.getBody().getDocsCount(); i < I; i++)
 				ClientUtil.printDocument(msg.getBody().getDocs(i));
 		}

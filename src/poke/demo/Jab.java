@@ -38,7 +38,10 @@ public class Jab {
 		ClientConnection cc = ClientConnection.initConnection("localhost", 6000);
 		ClientListener listener = new ClientPrintListener("jab demo");
 		cc.addListener(listener);
-
+		
+//		cc.poke(tag, count);
+//		Thread.sleep(1000000);
+		
 //		for (int i =0;true; i++) {
 //			count++;
 //			Thread.sleep(5000);
@@ -48,8 +51,8 @@ public class Jab {
 //		
 		while (true){
 	//System.out.println("Creating File");
-			Thread.sleep(9000);
-		cc.addDoc("TestFolder","TestSendFile.zip");
+			cc.addDoc("TestFolder","test_file.txt");
+			Thread.sleep(600000);			
 	//	System.out.println("Pulling the files from TestFolder, README.txt");
 		}
 //		cc.getDoc("TestFolder","TestSendFile.zip");	
