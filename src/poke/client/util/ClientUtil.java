@@ -14,8 +14,8 @@ public class ClientUtil {
 			return;
 		}
 
-		if (doc.hasNameSpace())
-			System.out.println("NameSpace: " + doc.getNameSpace());
+		if (doc.hasDocName())
+			System.out.println("NameSpace: " + doc.getDocName());
 
 		if (doc.hasDocument()) {
 			NameValueSet nvs = doc.getDocument();

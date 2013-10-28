@@ -39,6 +39,7 @@ public class PokeResource implements Resource {
 	 */
 	public Response process(Request request) {
 		// TODO add code to process the message/event received
+		System.out.println("Was here !!!!");
 		logger.info("poke: " + request.getBody().getFinger().getTag());
 
 		Response.Builder rb = Response.newBuilder();

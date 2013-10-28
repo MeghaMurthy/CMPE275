@@ -15,10 +15,15 @@
  */
 package poke.server.storage.jdbc;
 
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.sql.Connection;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.List;
 import java.util.Properties;
+import java.sql.Statement;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -27,6 +32,9 @@ import poke.server.storage.Storage;
 
 import com.jolbox.bonecp.BoneCP;
 import com.jolbox.bonecp.BoneCPConfig;
+//import com.mysql.jdbc.Statement;
+
+
 
 import eye.Comm.Document;
 import eye.Comm.NameSpace;
@@ -34,11 +42,11 @@ import eye.Comm.NameSpace;
 public class DatabaseStorage implements Storage {
 	protected static Logger logger = LoggerFactory.getLogger("database");
 
-	public static final String sDriver = "jdbc.driver";
-	public static final String sUrl = "jdbc.url";
-	public static final String sUser = "jdbc.user";
-	public static final String sPass = "jdbc.password";
-
+/*	public static final String sDriver = "com.mysql.jdbc.Driver";
+	public static final String sUrl = "jdbc:mysql://localhost:3306/cmpe275";
+	public static final String sUser = "root";
+	public static final String sPass = "root";
+*/
 	protected Properties cfg;
 	protected BoneCP cpool;
 
@@ -57,11 +65,12 @@ public class DatabaseStorage implements Storage {
 		this.cfg = cfg;
 
 		try {
-			Class.forName(cfg.getProperty(sDriver));
+	
+			Class.forName(cfg.getProperty("sDriver"));
 			BoneCPConfig config = new BoneCPConfig();
-			config.setJdbcUrl(cfg.getProperty(sUrl));
-			config.setUsername(cfg.getProperty(sUser, "sa"));
-			config.setPassword(cfg.getProperty(sPass, ""));
+			config.setJdbcUrl(cfg.getProperty("sUrl"));
+			config.setUsername(cfg.getProperty("sUser", "sa"));
+			config.setPassword(cfg.getProperty("sPass", ""));
 			config.setMinConnectionsPerPartition(5);
 			config.setMaxConnectionsPerPartition(10);
 			config.setPartitionCount(1);
@@ -95,19 +104,22 @@ public class DatabaseStorage implements Storage {
 			conn = cpool.getConnection();
 			conn.setTransactionIsolation(Connection.TRANSACTION_REPEATABLE_READ);
 			// TODO complete code to retrieve through JDBC/SQL
-			// select * from space where id = spaceId
-		} catch (Exception ex) {
-			ex.printStackTrace();
-			logger.error("failed/exception on looking up space " + spaceId, ex);
-			try {
-				conn.rollback();
-			} catch (SQLException e) {
+			if (conn != null){
+				System.out.println("Connection successful!");
+				Statement stmt =  conn.createStatement();
+				ResultSet rs = stmt.executeQuery("SELECT * FROM cmpe275.tenants"); // do something with the connection.
+				while(rs.next()){
+					System.out.println(rs.getString(1)); // should print out "1"'
+				}
 			}
+//			connectionPool.shutdown(); // shutdown connection pool.
+		} catch (SQLException e) {
+			e.printStackTrace();
 		} finally {
 			if (conn != null) {
 				try {
 					conn.close();
-				} catch (Exception e) {
+				} catch (SQLException e) {
 					e.printStackTrace();
 				}
 			}
@@ -115,6 +127,8 @@ public class DatabaseStorage implements Storage {
 
 		return space;
 	}
+	
+	
 
 	@Override
 	public List<NameSpace> findNameSpaces(NameSpace criteria) {
@@ -207,4 +221,74 @@ public class DatabaseStorage implements Storage {
 		// TODO Auto-generated method stub
 		return null;
 	}
+
+
+	public static void main(String[] args) {
+		
+		
+		Properties cfg = new Properties();
+		try {
+			cfg.load(new FileInputStream("/home/mahajan/cmpe275/Project01/core-netty/config/databases.cfg"));
+		} catch (FileNotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		DatabaseStorage db=new DatabaseStorage(cfg);
+		db.getNameSpaceInfo(100) ;
+		
+/*		
+		
+		BoneCP connectionPool = null;
+		Connection conn = null;
+ 
+		try {
+			// load the database driver (make sure this is in your classpath!)
+			Class.forName(sDriver);
+		} catch (Exception e) {
+			e.printStackTrace();
+			return;
+		}
+		
+		try {
+			// setup the connection pool
+			BoneCPConfig config = new BoneCPConfig();
+			config.setJdbcUrl(sUrl); // jdbc url specific to your database, eg jdbc:mysql://127.0.0.1/yourdb
+			config.setUsername(sUser); 
+			config.setPassword(sPass);
+			config.setMinConnectionsPerPartition(5);
+			config.setMaxConnectionsPerPartition(10);
+			config.setPartitionCount(1);
+			connectionPool = new BoneCP(config); // setup the connection pool
+			
+			conn = connectionPool.getConnection(); // fetch a connection
+			
+			if (conn != null){
+				System.out.println("Connection successful!");
+				Statement stmt =  conn.createStatement();
+				ResultSet rs = stmt.executeQuery("SELECT * FROM cmpe275.tenants"); // do something with the connection.
+				while(rs.next()){
+					System.out.println(rs.getString(1)); // should print out "1"'
+				}
+			}
+			connectionPool.shutdown(); // shutdown connection pool.
+		} catch (SQLException e) {
+			e.printStackTrace();
+		} finally {
+			if (conn != null) {
+				try {
+					conn.close();
+				} catch (SQLException e) {
+					e.printStackTrace();
+				}
+			}
+		}
+		*/
+		
+	}
+
+
 }
+

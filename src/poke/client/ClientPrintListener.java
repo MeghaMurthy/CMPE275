@@ -28,12 +28,16 @@ public class ClientPrintListener implements ClientListener {
 
 	@Override
 	public void onMessage(eye.Comm.Response msg) {
-		if (logger.isDebugEnabled())
+		if (logger.isDebugEnabled()){
 			ClientUtil.printHeader(msg.getHeader());
-
-		if (msg.getHeader().getRoutingId() == Header.Routing.FINGER)
+		System.out.println("***************************************************************");
+		}
+		if (msg.getHeader().getRoutingId() == Header.Routing.FINGER){
+			System.out.println("+In Client: onMessage method+++++++++++++++++++++++++++++++++++++++++++++++++++++");
 			ClientUtil.printFinger(msg.getBody().getFinger());
+		}
 		else {
+			System.out.println("===============================================================");
 			for (int i = 0, I = msg.getBody().getDocsCount(); i < I; i++)
 				ClientUtil.printDocument(msg.getBody().getDocs(i));
 		}

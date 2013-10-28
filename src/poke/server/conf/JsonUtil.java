@@ -44,7 +44,9 @@ public class JsonUtil {
 
 	public static <T> T decode(String data, Class<T> theClass) {
 		try {
+			System.out.println("JsonUtil : decode : 1 " );
 			ObjectMapper mapper = new ObjectMapper();
+			System.out.println("JsonUtil : decode : 2 :" +mapper.readValue(data.getBytes(), theClass).getClass().getName());
 			return mapper.readValue(data.getBytes(), theClass);
 		} catch (Exception ex) {
 			return null;

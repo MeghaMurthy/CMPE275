@@ -188,11 +188,11 @@ public class HeartbeatManager extends Thread {
 	@Override
 	public void run() {
 		logger.info("starting HB manager");
-		
+
 		while (forever) {
 			try {
 				Thread.sleep(sHeartRate);
-				
+
 				// ignore until we have edges with other nodes
 				if (outgoingHB.size() > 0) {
 					// TODO verify known node's status
@@ -202,15 +202,13 @@ public class HeartbeatManager extends Thread {
 					for (HeartbeatData hd : outgoingHB.values()) {
 						// if failed sends exceed threshold, stop sending
 						if (hd.getFailuresOnSend() > HeartbeatData.sFailureToSendThresholdDefault)
-							continue; 
+							continue;
 
 						// only generate the message if needed
 						if (msg == null)
 							msg = generateHB();
 
 						try {
-							logger.info(String.format("*****sending heartbeat data: %s to %s", msg, hd.sa));
-							
 							hd.channel.write(msg, hd.sa);
 							hd.setLastBeatSent(System.currentTimeMillis());
 							hd.setFailuresOnSend(0);

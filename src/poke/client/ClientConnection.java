@@ -15,7 +15,17 @@
  */
 package poke.client;
 
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.net.InetSocketAddress;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.concurrent.Executors;
 import java.util.concurrent.LinkedBlockingDeque;
 
@@ -26,10 +36,24 @@ import org.jboss.netty.channel.socket.nio.NioClientSocketChannelFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import poke.client.util.FileUtil;
+
+import com.google.protobuf.ByteString;
+import com.google.protobuf.DescriptorProtos.FileDescriptorProto;
+import com.google.protobuf.DescriptorProtos.FileDescriptorSet;
+import com.google.protobuf.Descriptors.Descriptor;
+import com.google.protobuf.Descriptors.DescriptorValidationException;
+import com.google.protobuf.Descriptors.FileDescriptor;
 import com.google.protobuf.GeneratedMessage;
 
+import eye.Comm.Document;
+import eye.Comm.DocumentSet;
+import eye.Comm.DocumentSet.Builder;
 import eye.Comm.Finger;
 import eye.Comm.Header;
+import eye.Comm.NameSpace;
+import eye.Comm.NameValueSet;
+import eye.Comm.NameValueSet.NodeType;
 import eye.Comm.Payload;
 import eye.Comm.Request;
 
@@ -114,6 +138,123 @@ public class ClientConnection {
 			logger.warn("Unable to deliver message, queuing");
 		}
 	}
+
+
+	/*Added to send a document across */
+	public void addDoc(String nameSpace,String filePath) {
+
+		try {
+			NameSpace.Builder ns = eye.Comm.NameSpace.newBuilder();
+			ns.setId(10L);
+			ns.setOwner("Ameya");
+			ns.setName(nameSpace);
+			ns.build();
+
+			Document.Builder d= eye.Comm.Document.newBuilder();
+			
+			d.setChunkContent(ByteString.copyFrom(FileUtil.read(new File(filePath))));
+			d.setDocName(filePath);
+//			System.out.println("Document Name --> "+d.getDocName());
+			d.setId(1000L);
+			d.build();
+
+			// payload containing data
+			Request.Builder r = Request.newBuilder();
+			eye.Comm.Payload.Builder p = Payload.newBuilder();
+			p.setSpace(ns.build());
+			p.setDoc(d.build());
+			r.setBody(p.build());
+
+
+			// header with routing info
+			eye.Comm.Header.Builder h = Header.newBuilder();
+			h.setOriginator("Client 1");
+			h.setTag("Test Document");
+			h.setTime(System.currentTimeMillis());
+			h.setRoutingId(eye.Comm.Header.Routing.DOCADD);
+			r.setHeader(h.build());
+
+			eye.Comm.Request req = r.build();
+
+			// enqueue message
+			outbound.put(req);
+
+
+		}
+		catch(Exception ex){
+			ex.printStackTrace();
+		}
+	}
+	
+	// Ask for the get document from the server.
+	public void getDoc(String namespace, String filename){
+	
+		try{
+			NameSpace.Builder ns = eye.Comm.NameSpace.newBuilder();
+			ns.setId(10L);
+			ns.setOwner("Ameya");
+			ns.setName(namespace);
+			System.out.println("Namespace  --> " +ns.getName());
+			ns.build();
+	
+			// payload containing data
+			Request.Builder r = Request.newBuilder();
+			eye.Comm.Payload.Builder p = Payload.newBuilder();
+			p.setSpace(ns.build());
+			r.setBody(p.build());
+	
+	
+			// header with routing info
+			eye.Comm.Header.Builder h = Header.newBuilder();
+			h.setOriginator("Client 1");
+			h.setTag("Test NameSpace");
+			h.setTime(System.currentTimeMillis());
+			h.setRoutingId(eye.Comm.Header.Routing.DOCFIND);
+			r.setHeader(h.build());
+			eye.Comm.Request req = r.build();
+	
+			// enqueue message
+			outbound.put(req);
+		}
+		catch (InterruptedException e) {
+			logger.warn("Unable to deliver message, queuing");
+		}
+	}
+	
+	
+	public void addNameSpace(String nameSpace) {	
+		try{
+			NameSpace.Builder ns = eye.Comm.NameSpace.newBuilder();
+			ns.setId(10L);
+			ns.setOwner("Ameya");
+			ns.setName(nameSpace);
+			System.out.println("Namespace  --> " +ns.getName());
+			ns.build();
+
+			// payload containing data
+			Request.Builder r = Request.newBuilder();
+			eye.Comm.Payload.Builder p = Payload.newBuilder();
+			p.setSpace(ns.build());
+			r.setBody(p.build());
+
+
+			// header with routing info
+			eye.Comm.Header.Builder h = Header.newBuilder();
+			h.setOriginator("Client 1");
+			h.setTag("Test NameSpace");
+			h.setTime(System.currentTimeMillis());
+			h.setRoutingId(eye.Comm.Header.Routing.NAMESPACEADD);
+			r.setHeader(h.build());
+			eye.Comm.Request req = r.build();
+
+			// enqueue message
+			outbound.put(req);
+		}
+		catch (InterruptedException e) {
+			logger.warn("Unable to deliver message, queuing");
+		}
+	}
+	/**/
 
 	private void init() {
 		// the queue to support client-side surging

@@ -71,6 +71,8 @@ public class HeartbeatConnector extends Thread {
 		HeartMonitor hm = new HeartMonitor(node.getHost(), node.getMgmtport(), handler);
 		monitors.add(hm);
 	}
+	
+	
 
 	@Override
 	public void run() {

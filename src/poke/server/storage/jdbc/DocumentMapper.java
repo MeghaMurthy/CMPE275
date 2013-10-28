@@ -16,12 +16,14 @@
 package poke.server.storage.jdbc;
 
 import java.sql.ResultSet;
+import java.sql.Statement;
 import java.util.List;
 
 import eye.Comm.Document;
 
 public class DocumentMapper {
-
+	
+	
 	List<Document> decode(ResultSet rs) {
 		// TODO not implemented
 		return null;

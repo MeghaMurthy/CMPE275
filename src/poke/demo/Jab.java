@@ -15,6 +15,12 @@
  */
 package poke.demo;
 
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+
 import poke.client.ClientConnection;
 import poke.client.ClientListener;
 import poke.client.ClientPrintListener;
@@ -27,29 +33,46 @@ public class Jab {
 		this.tag = tag;
 	}
 
-	public void run() {
-		ClientConnection cc = ClientConnection.initConnection("localhost", 5570);
+	public void run() throws InterruptedException {
+//		ClientConnection cc = ClientConnection.initConnection("192.168.2.43", 6000);
+		ClientConnection cc = ClientConnection.initConnection("localhost", 6000);
 		ClientListener listener = new ClientPrintListener("jab demo");
 		cc.addListener(listener);
 
-		for (int i = 0; i < 3; i++) {
-			count++;
-			cc.poke(tag, count);
+//		for (int i =0;true; i++) {
+//			count++;
+//			Thread.sleep(5000);
+//			cc.poke(tag, count);
+//		}
+//		cc.addNameSpace("TestFolder");
+//		
+		while (true){
+	//System.out.println("Creating File");
+			Thread.sleep(9000);
+		cc.addDoc("TestFolder","TestSendFile.zip");
+	//	System.out.println("Pulling the files from TestFolder, README.txt");
 		}
+//		cc.getDoc("TestFolder","TestSendFile.zip");	
 	}
 
 	public static void main(String[] args) {
 		try {
 			Jab jab = new Jab("jab");
 			jab.run();
-
+		
+		
+			
+	//		InputStream in= new FileInputStream("/home/mahajan/cmpe275/Project01/core-netty/README.txt");
+			
 			// we are running asynchronously
 			System.out.println("\nExiting in 5 seconds");
-			Thread.sleep(5000);
+//			Thread.sleep(5000);
 			System.exit(0);
 
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
 	}
+	
+
 }

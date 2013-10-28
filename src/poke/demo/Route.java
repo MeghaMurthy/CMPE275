@@ -34,7 +34,7 @@ public class Route {
 	}
 
 	public void run() {
-		ClientConnection cc = ClientConnection.initConnection("localhost", 5570);
+		ClientConnection cc = ClientConnection.initConnection("localhost", 6000);
 		ClientListener listener = new ClientPrintListener("jab demo");
 		cc.addListener(listener);
 
@@ -46,7 +46,7 @@ public class Route {
 
 	public static void main(String[] args) {
 		try {
-			Route jab = new Route("jab");
+			Route jab = new Route("route");
 			jab.run();
 
 			// we are running asynchronously

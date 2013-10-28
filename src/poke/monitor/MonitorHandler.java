@@ -62,7 +62,8 @@ public class MonitorHandler extends SimpleChannelUpstreamHandler {
 
 	public boolean send(GeneratedMessage msg) {
 		// TODO a queue is needed to prevent overloading of the socket
-		// connection. For the demonstration, we don't need it
+		// connection. For the demonstration, we don't need ita
+		
 		ChannelFuture cf = channel.write(msg);
 		if (cf.isDone() && !cf.isSuccess()) {
 			logger.error("failed to poke!");
@@ -75,7 +76,7 @@ public class MonitorHandler extends SimpleChannelUpstreamHandler {
 	public void handleMessage(eye.Comm.Management msg) {
 		for (String id : listeners.keySet()) {
 			MonitorListener ml = listeners.get(id);
-
+			System.out.println("Server Out Id : "+id);
 			// TODO this may need to be delegated to a thread pool to allow
 			// async processing of replies
 			ml.onMessage(msg);

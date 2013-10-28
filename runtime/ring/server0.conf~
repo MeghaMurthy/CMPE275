@@ -1,17 +1,11 @@
 {
     "nearest": {
         "nearestNodes": {
-            "three": {
-                "nodeId": "three",
-                "host": "localhost",
-                "port": 6003,
-                "mgmtPort": 6013
-            },
             "one": {
                 "nodeId": "one",
                 "host": "localhost",
                 "port": 6001,
-                "mgmtPort": 6011
+                "mgmtPort": 6101
             }
         }
     },
@@ -19,7 +13,7 @@
         "general": {
             "node.id": "zero",
             "port": "6000",
-            "port.mgmt": "6001",
+            "port.mgmt": "6100",
             "forward": "poke.server.routing.ForwardResource",
             "storage": "poke.server.storage.InMemoryStorage"
         }

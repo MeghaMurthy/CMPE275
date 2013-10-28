@@ -178,6 +178,7 @@ public class HeartMonitor {
 
 		boolean rtn = false;
 		try {
+			System.out.println("HeartMonitor --> initiate Heart Beat");
 			Channel ch = connect();
 			Network.Builder n = Network.newBuilder();
 			n.setNodeId("monitor");
@@ -210,6 +211,7 @@ public class HeartMonitor {
 			boolean connected = initiateHeartbeat();
 			while (connected) {
 				Thread.sleep(1000);
+				System.out.println("In the while loop");
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -221,7 +223,7 @@ public class HeartMonitor {
 	 */
 	public static void main(String[] args) {
 		String host = "localhost";
-		int mport = 5670;
+		int mport = 6100;
 
 		if (args.length == 2) {
 			try {

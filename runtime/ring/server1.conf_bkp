@@ -1,0 +1,53 @@
+{
+    "nearest": {
+        "nearestNodes": {
+            "zero": {
+                "nodeId": "zero",
+                "host": "localhost",
+                "port": 6000,
+                "mgmtPort": 6100
+            },
+            "two": {
+                "nodeId": "two",
+                "host": "localhost",
+                "port": 6002,
+                "mgmtPort": 6102
+            }
+        }
+    },
+    "server": {
+        "general": {
+            "node.id": "one",
+            "port": "6001",
+            "port.mgmt": "6101",
+            "forward": "poke.server.routing.ForwardResource",
+            "storage": "poke.server.storage.InMemoryStorage"
+        }
+    },
+    "routing": [
+        {
+            "name": "finger",
+            "id": 2,
+            "clazz": "poke.resources.PokeResource",
+            "enabled": false
+        },
+        {
+            "name": "namespace.list",
+            "id": 11,
+            "clazz": "poke.resources.NameSpaceResource",
+            "enabled": false
+        },
+        {
+            "name": "namespace.add",
+            "id": 12,
+            "clazz": "poke.resources.NameSpaceResource",
+            "enabled": false
+        },
+        {
+            "name": "namespace.remove",
+            "id": 13,
+            "clazz": "poke.resources.NameSpaceResource",
+            "enabled": false
+        }
+    ]
+}

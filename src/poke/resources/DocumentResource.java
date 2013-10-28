@@ -15,16 +15,42 @@
  */
 package poke.resources;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import poke.server.resources.Resource;
+import poke.server.resources.ResourceUtil;
+import eye.Comm.Finger;
+import eye.Comm.PayloadReply;
 import eye.Comm.Request;
 import eye.Comm.Response;
+import eye.Comm.Header.ReplyStatus;
 
 public class DocumentResource implements Resource {
-
+	protected static Logger logger = LoggerFactory.getLogger("server DOC Resource");
 	@Override
-	public Response process(Request request) {
-		// TODO Auto-generated method stub
-		return null;
-	}
 
+		public Response process(Request request) {
+
+
+			// TODO add code to process the message/event received
+			//System.out.println("Was here !!!!");
+			logger.info("Document: " + request.getBody().getDoc().getDocName());
+
+			Response.Builder rb = Response.newBuilder();
+
+			// metadata
+			rb.setHeader(ResourceUtil.buildHeaderFrom(request.getHeader(), ReplyStatus.SUCCESS, null));
+
+			// payload
+			PayloadReply.Builder pb = PayloadReply.newBuilder();
+			Finger.Builder fb = Finger.newBuilder();
+			fb.setTag("File Recieved !!");
+			fb.setNumber(100);
+			pb.setFinger(fb.build());
+			rb.setBody(pb.build());
+			Response reply = rb.build();
+			return reply;
+
+		}
 }

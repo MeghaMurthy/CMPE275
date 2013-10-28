@@ -5,13 +5,7 @@
                 "nodeId": "zero",
                 "host": "localhost",
                 "port": 6000,
-                "mgmtPort": 6001
-            },
-            "two": {
-                "nodeId": "two",
-                "host": "localhost",
-                "port": 6002,
-                "mgmtPort": 6012
+                "mgmtPort": 6100
             }
         }
     },
@@ -19,7 +13,7 @@
         "general": {
             "node.id": "one",
             "port": "6001",
-            "port.mgmt": "6011",
+            "port.mgmt": "6101",
             "forward": "poke.server.routing.ForwardResource",
             "storage": "poke.server.storage.InMemoryStorage"
         }

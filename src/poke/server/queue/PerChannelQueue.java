@@ -15,6 +15,15 @@
  */
 package poke.server.queue;
 
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.OutputStream;
 import java.lang.Thread.State;
 import java.util.concurrent.LinkedBlockingDeque;
 
@@ -27,10 +36,13 @@ import org.slf4j.LoggerFactory;
 import poke.server.resources.Resource;
 import poke.server.resources.ResourceFactory;
 import poke.server.resources.ResourceUtil;
+import poke.util.FileOps;
 
 import com.google.protobuf.GeneratedMessage;
 
+import eye.Comm.Document;
 import eye.Comm.Header.ReplyStatus;
+import eye.Comm.NameSpace;
 import eye.Comm.Request;
 import eye.Comm.Response;
 
@@ -215,7 +227,8 @@ public class PerChannelQueue implements ChannelQueue {
 			if (outbound == null)
 				throw new RuntimeException("connection worker detected null queue");
 		}
-
+		
+		
 		@Override
 		public void run() {
 			Channel conn = sq.channel;
@@ -231,21 +244,72 @@ public class PerChannelQueue implements ChannelQueue {
 				try {
 					// block until a message is enqueued
 					GeneratedMessage msg = sq.inbound.take();
-
+					
 					// process request and enqueue response
 					if (msg instanceof Request) {
 						Request req = ((Request) msg);
-
+						
+						/*
+						System.out.println("Inbound Run method () Print the msg Tag ******* > " +req.getBody().getDoc().getSerializedSize());
+						System.out.println("Inbound Run method () Print the name Tag ******* > " +req.getBody().getDoc().getDocName());	
+						byte[] bs = req.getBody().getDoc().getChunkContent().toByteArray();						
+						System.out.println("Document sent ******* > "+new  String(bs,0,bs.length));
+						*/
+						
+						/*
+						Document doc = Document.parseFrom(new FileInputStream("ABC"));
+						System.out.println("+++++++++++++++++++====================++++++++++++++++++++++++++++++");
+						System.out.println(doc);
+						System.out.println("+++++++++++++++++++====================++++++++++++++++++++++++++++++");
 						// do we need to route the request?
-
+						*/
+						
+						
+						
+						/*======= Write to the file on the local space ==========*/	
+/*						String filename ="/home/mahajan/cmpe275/Project01/core-netty/server-folder/"+req.getBody().getFinger().getNumber()+".txt";
+						File file = new File(filename); 
+						// if file doesnt exists, then create it
+						if (!file.exists()) {
+							file.createNewFile();
+						}
+						FileWriter fw = new FileWriter(file.getAbsoluteFile());
+						BufferedWriter bw = new BufferedWriter(fw);
+						bw.write(req.getBody().getFinger().toString());
+						bw.close();
+*/						
+						/*============= End of server side coding =============*/
 						// handle it locally
+						
+						System.out.println("Here is the routing ID :::> "+ req.getHeader().getRoutingId().getNumber());
+						switch (req.getHeader().getRoutingId().getNumber()){
+							case 10:{
+								logger.info("PerChannelQueue: Inbound Creating Name Space");
+								 FileOps.getInstance().createNameSpace(req.getBody().getSpace());
+								 break;
+							}
+								
+							case 20:{
+								logger.info("PerChannelQueue: Inbound  Adding Document --> "+ req.getBody().getSpace().getName() +" Has Header ? -> "+ req.hasHeader() +" Has Body ? -> "+ req.hasBody());
+								 FileOps.getInstance().addDocument(req.getBody().getSpace().getName(),req.getBody().getDoc());
+								 break;
+							}
+								
+								
+							default:{
+								logger.info("Not Implemented ");
+								break; 
+							}
+						}
+			//AMEYA :::::> Commented to avoid the null header error thrown									
 						Resource rsc = ResourceFactory.getInstance().resourceInstance(req.getHeader());
-
+									System.out.println("Check if the request is null? ==> "+(rsc == null));
 						Response reply = null;
 						if (rsc == null) {
 							logger.error("failed to obtain resource for " + req);
 							reply = ResourceUtil.buildError(req.getHeader(), ReplyStatus.FAILURE,
 									"Request not processed");
+							
 						} else
 							reply = rsc.process(req);
 

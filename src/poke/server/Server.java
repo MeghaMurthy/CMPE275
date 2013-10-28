@@ -62,6 +62,7 @@ public class Server {
 	protected static Logger logger = LoggerFactory.getLogger("server");
 
 	protected static final ChannelGroup allChannels = new DefaultChannelGroup("server");
+	// AMEYA :: Contains the list of the nearest nodes ????
 	protected static HashMap<Integer, Bootstrap> bootstrap = new HashMap<Integer, Bootstrap>();
 	protected ChannelFactory cf, mgmtCF;
 	protected ServerConf conf;
@@ -100,9 +101,10 @@ public class Server {
 			byte[] raw = new byte[(int) cfg.length()];
 			br = new BufferedInputStream(new FileInputStream(cfg));
 			br.read(raw);
-			conf = JsonUtil.decode(new String(raw), ServerConf.class);
+			conf = JsonUtil.decode(new String(raw), ServerConf.class);	
 			ResourceFactory.initialize(conf);
 		} catch (Exception e) {
+			System.out.println("At init Server : "+e.getMessage());
 		}
 
 		// communication - external (TCP) using asynchronous communication
@@ -115,7 +117,8 @@ public class Server {
 
 		// internal using TCP - a better option
 		mgmtCF = new NioServerSocketChannelFactory(Executors.newCachedThreadPool(), Executors.newFixedThreadPool(2));
-
+		
+		System.out.println("Server : init : end here ");
 	}
 
 	public void release() {
@@ -140,9 +143,12 @@ public class Server {
 		// tweak for performance
 		bs.setOption("child.tcpNoDelay", true);
 		bs.setOption("child.keepAlive", true);
+		// AMEYA :: Need to set the buffer for this as port would Also recieve the data 
 		bs.setOption("receiveBufferSizePredictorFactory", new AdaptiveReceiveBufferSizePredictorFactory(1024 * 2,
 				1024 * 4, 1048576));
 
+		
+		// AMEYA :: bootstrap is a hashmap containting the port number and the serverbootstrap object for the server.
 		bootstrap.put(port, bs);
 
 		// Bind and start to accept incoming connections.
@@ -184,7 +190,7 @@ public class Server {
 		Channel ch = bs.bind(new InetSocketAddress(port));
 		allChannels.add(ch);
 
-		logger.info("Starting server, listening on port = " + port);
+		logger.info("Starting server, listening on mgmt port = " + port);
 	}
 
 	/**
@@ -238,7 +244,7 @@ public class Server {
 			System.err.println("Usage: java " + Server.class.getClass().getName() + " conf-file");
 			System.exit(1);
 		}
-
+		System.out.println("Server : main : 1 " );
 		File cfg = new File(args[0]);
 		if (!cfg.exists()) {
 			Server.logger.error("configuration file does not exist: " + cfg);
