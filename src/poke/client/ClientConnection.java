@@ -139,34 +139,33 @@ public class ClientConnection {
 		}
 	}
 
-
-	/*Added to send a document across */
-	public void addDoc(String nameSpace,String filePath) {
+	/* Added to send a document across */
+	public void addDoc(String nameSpace, long id, String owner, String docName,
+			byte[] fileContents) {
 
 		try {
 			NameSpace.Builder ns = eye.Comm.NameSpace.newBuilder();
-			ns.setId(10L);
-			ns.setOwner("Ameya");
+			ns.setId(10);
+			ns.setOwner(owner);
 			ns.setName(nameSpace);
 
-			Document.Builder d= eye.Comm.Document.newBuilder();
-			d.setChunkContent(ByteString.copyFrom(FileUtil.read(new File(filePath))));
-			d.setDocName(filePath);
-//			System.out.println("Document Name --> "+d.getDocName());
-			d.setId(1000L);
+			Document.Builder d = eye.Comm.Document.newBuilder();
+			d.setChunkContent(ByteString.copyFrom(fileContents));
+			d.setDocName(docName);
+			d.setId(id);
 
 			// payload containing data
 			eye.Comm.Payload.Builder p = Payload.newBuilder();
 			p.setSpace(ns.build());
 			p.setDoc(d.build());
-			
+
 			// header with routing info
 			eye.Comm.Header.Builder h = Header.newBuilder();
 			h.setOriginator("client");
 			h.setTag("document upload");
 			h.setTime(System.currentTimeMillis());
 			h.setRoutingId(eye.Comm.Header.Routing.DOCADD);
-			
+
 			Request.Builder r = Request.newBuilder();
 			r.setHeader(h.build());
 			r.setBody(p.build());
@@ -176,31 +175,32 @@ public class ClientConnection {
 			// enqueue message
 			outbound.put(req);
 
-
-		}
-		catch(Exception ex){
+		} catch (Exception ex) {
 			ex.printStackTrace();
 		}
 	}
-	
+
 	// Ask for the get document from the server.
-	public void getDoc(String namespace, String filename){
-	
-		try{
+	public void getDoc(String namespace, String documentName) {
+
+		try {
 			NameSpace.Builder ns = eye.Comm.NameSpace.newBuilder();
 			ns.setId(10L);
 			ns.setOwner("Ameya");
 			ns.setName(namespace);
-			System.out.println("Namespace  --> " +ns.getName());
 			ns.build();
-	
+
+			Document.Builder d = Document.newBuilder();
+			d.setDocName(documentName);
+			
 			// payload containing data
-			Request.Builder r = Request.newBuilder();
 			eye.Comm.Payload.Builder p = Payload.newBuilder();
 			p.setSpace(ns.build());
+			p.setDoc(d.build());
+			
+			Request.Builder r = Request.newBuilder();
 			r.setBody(p.build());
-	
-	
+
 			// header with routing info
 			eye.Comm.Header.Builder h = Header.newBuilder();
 			h.setOriginator("Client 1");
@@ -209,23 +209,21 @@ public class ClientConnection {
 			h.setRoutingId(eye.Comm.Header.Routing.DOCFIND);
 			r.setHeader(h.build());
 			eye.Comm.Request req = r.build();
-	
+
 			// enqueue message
 			outbound.put(req);
-		}
-		catch (InterruptedException e) {
+		} catch (InterruptedException e) {
 			logger.warn("Unable to deliver message, queuing");
 		}
 	}
-	
-	
-	public void addNameSpace(String nameSpace) {	
-		try{
+
+	public void addNameSpace(String nameSpace) {
+		try {
 			NameSpace.Builder ns = eye.Comm.NameSpace.newBuilder();
 			ns.setId(10L);
 			ns.setOwner("Ameya");
 			ns.setName(nameSpace);
-			System.out.println("Namespace  --> " +ns.getName());
+			System.out.println("Namespace  --> " + ns.getName());
 			ns.build();
 
 			// payload containing data
@@ -233,7 +231,6 @@ public class ClientConnection {
 			eye.Comm.Payload.Builder p = Payload.newBuilder();
 			p.setSpace(ns.build());
 			r.setBody(p.build());
-
 
 			// header with routing info
 			eye.Comm.Header.Builder h = Header.newBuilder();
@@ -246,11 +243,11 @@ public class ClientConnection {
 
 			// enqueue message
 			outbound.put(req);
-		}
-		catch (InterruptedException e) {
+		} catch (InterruptedException e) {
 			logger.warn("Unable to deliver message, queuing");
 		}
 	}
+
 	/**/
 
 	private void init() {
@@ -258,7 +255,8 @@ public class ClientConnection {
 		outbound = new LinkedBlockingDeque<com.google.protobuf.GeneratedMessage>();
 
 		// Configure the client.
-		bootstrap = new ClientBootstrap(new NioClientSocketChannelFactory(Executors.newCachedThreadPool(),
+		bootstrap = new ClientBootstrap(new NioClientSocketChannelFactory(
+				Executors.newCachedThreadPool(),
 				Executors.newCachedThreadPool()));
 
 		bootstrap.setOption("connectTimeoutMillis", 10000);
@@ -295,7 +293,8 @@ public class ClientConnection {
 		if (channel.isDone() && channel.isSuccess())
 			return channel.getChannel();
 		else
-			throw new RuntimeException("Not able to establish connection to server");
+			throw new RuntimeException(
+					"Not able to establish connection to server");
 	}
 
 	/**
@@ -313,14 +312,16 @@ public class ClientConnection {
 			this.conn = conn;
 
 			if (conn.outbound == null)
-				throw new RuntimeException("connection worker detected null queue");
+				throw new RuntimeException(
+						"connection worker detected null queue");
 		}
 
 		@Override
 		public void run() {
 			Channel ch = conn.connect();
 			if (ch == null || !ch.isOpen()) {
-				ClientConnection.logger.error("connection missing, no outbound communication");
+				ClientConnection.logger
+						.error("connection missing, no outbound communication");
 				return;
 			}
 
@@ -332,7 +333,8 @@ public class ClientConnection {
 					// block until a message is enqueued
 					GeneratedMessage msg = conn.outbound.take();
 					if (ch.isWritable()) {
-						ClientHandler handler = conn.connect().getPipeline().get(ClientHandler.class);
+						ClientHandler handler = conn.connect().getPipeline()
+								.get(ClientHandler.class);
 
 						if (!handler.send(msg))
 							conn.outbound.putFirst(msg);
@@ -342,7 +344,8 @@ public class ClientConnection {
 				} catch (InterruptedException ie) {
 					break;
 				} catch (Exception e) {
-					ClientConnection.logger.error("Unexpected communcation failure", e);
+					ClientConnection.logger.error(
+							"Unexpected communcation failure", e);
 					break;
 				}
 			}

@@ -25,6 +25,7 @@ import poke.server.conf.ServerConf;
 import poke.server.resources.Resource;
 import poke.server.resources.ResourceUtil;
 import eye.Comm.Finger;
+import eye.Comm.Payload;
 import eye.Comm.PayloadReply;
 import eye.Comm.Request;
 import eye.Comm.Response;
@@ -59,7 +60,7 @@ public class ForwardResource implements Resource {
 	}
 
 	@Override
-	public Response process(Request request) {
+	public Response process(Request request, PayloadReply result) {
 		String nextNode = determineForwardNode(request);
 		if (nextNode != null) {
 			Request fwd = ResourceUtil.buildForwardMessage(request, cfg);
@@ -115,4 +116,6 @@ public class ForwardResource implements Resource {
 
 		return null;
 	}
+
+
 }

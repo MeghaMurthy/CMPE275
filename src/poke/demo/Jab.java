@@ -38,6 +38,14 @@ public class Jab {
 		ClientConnection cc = ClientConnection.initConnection("localhost", 6000);
 		ClientListener listener = new ClientPrintListener("jab demo");
 		cc.addListener(listener);
+
+//		cc.addDoc("TestFolder", 2, "megha", "file_2.txt", "blah".getBytes());
+//		cc.addDoc("TestFolder", 3, "megha", "file_3.txt", "blah blah".getBytes());
+//		cc.addDoc("TestFolder", 4, "megha", "file_4.txt", "blah blah blah".getBytes());
+//		cc.addDoc("TestFolder", 5, "megha", "file_5.txt", "blah blah blah blah".getBytes());
+
+		cc.getDoc("TestFolder","file_2.txt");
+		
 		
 //		cc.poke(tag, count);
 //		Thread.sleep(1000000);
@@ -49,12 +57,12 @@ public class Jab {
 //		}
 //		cc.addNameSpace("TestFolder");
 //		
-		while (true){
-	//System.out.println("Creating File");
-			cc.addDoc("TestFolder","test_file.txt");
-			Thread.sleep(600000);			
-	//	System.out.println("Pulling the files from TestFolder, README.txt");
-		}
+//		while (true){
+//	//System.out.println("Creating File");
+//			cc.addDoc("TestFolder","test_file.txt");
+//			Thread.sleep(6000);			
+//	//	System.out.println("Pulling the files from TestFolder, README.txt");
+//		}
 //		cc.getDoc("TestFolder","TestSendFile.zip");	
 	}
 
@@ -69,7 +77,7 @@ public class Jab {
 			
 			// we are running asynchronously
 			System.out.println("\nExiting in 5 seconds");
-//			Thread.sleep(5000);
+			Thread.sleep(600000);
 			System.exit(0);
 
 		} catch (Exception e) {

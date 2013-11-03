@@ -27,38 +27,28 @@ import eye.Comm.PayloadReply;
 import eye.Comm.Request;
 import eye.Comm.Response;
 
-public class PokeResource implements Resource {
-	protected static Logger logger = LoggerFactory.getLogger("server");
+public class DocumentFindResource implements Resource {
+	protected static Logger logger = LoggerFactory
+			.getLogger("server DOC Resource");
 
-	public PokeResource() {
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see poke.server.resources.Resource#process(eye.Comm.Finger)
-	 */
+	@Override
 	public Response process(Request request, PayloadReply result) {
+
 		// TODO add code to process the message/event received
-		System.out.println("Was here !!!!");
-		logger.info("poke: " + request.getBody().getFinger().getTag());
+		// System.out.println("Was here !!!!");
+		logger.info("Document: " + request.getBody().getDoc().getDocName());
 
 		Response.Builder rb = Response.newBuilder();
 
 		// metadata
-		rb.setHeader(ResourceUtil.buildHeaderFrom(request.getHeader(), ReplyStatus.SUCCESS, null));
+		rb.setHeader(ResourceUtil.buildHeaderFrom(request.getHeader(),
+				ReplyStatus.SUCCESS, null));
 
 		// payload
-		PayloadReply.Builder pb = PayloadReply.newBuilder();
-		Finger.Builder fb = Finger.newBuilder();
-		fb.setTag(request.getBody().getFinger().getTag());
-		fb.setNumber(request.getBody().getFinger().getNumber());
-		pb.setFinger(fb.build());
-		rb.setBody(pb.build());
-
+		rb.setBody(result);
 		Response reply = rb.build();
-
 		return reply;
+
 	}
 
 

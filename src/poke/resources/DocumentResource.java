@@ -21,16 +21,17 @@ import org.slf4j.LoggerFactory;
 import poke.server.resources.Resource;
 import poke.server.resources.ResourceUtil;
 import eye.Comm.Finger;
+import eye.Comm.Header.ReplyStatus;
+import eye.Comm.Payload;
 import eye.Comm.PayloadReply;
 import eye.Comm.Request;
 import eye.Comm.Response;
-import eye.Comm.Header.ReplyStatus;
 
 public class DocumentResource implements Resource {
 	protected static Logger logger = LoggerFactory.getLogger("server DOC Resource");
 	@Override
 
-		public Response process(Request request) {
+		public Response process(Request request, PayloadReply result) {
 
 
 			// TODO add code to process the message/event received
@@ -53,4 +54,5 @@ public class DocumentResource implements Resource {
 			return reply;
 
 		}
+	
 }

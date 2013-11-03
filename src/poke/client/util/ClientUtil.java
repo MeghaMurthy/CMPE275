@@ -21,6 +21,10 @@ public class ClientUtil {
 			NameValueSet nvs = doc.getDocument();
 			PrintNode.print(nvs);
 		}
+
+		if (doc.hasChunkContent()) {
+			System.out.println("Content: " + doc.getChunkContent());
+		}
 	}
 
 	public static void printFinger(Finger f) {
@@ -33,7 +37,8 @@ public class ClientUtil {
 	}
 
 	public static void printHeader(Header h) {
-		System.out.println("-------------------------------------------------------");
+		System.out
+				.println("-------------------------------------------------------");
 		System.out.println("Header");
 		System.out.println(" - Orig   : " + h.getOriginator());
 		System.out.println(" - Req ID : " + h.getRoutingId());

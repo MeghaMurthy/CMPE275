@@ -15,16 +15,8 @@
  */
 package poke.server.queue;
 
-import java.io.BufferedReader;
-import java.io.BufferedWriter;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.OutputStream;
 import java.lang.Thread.State;
+import java.util.List;
 import java.util.concurrent.LinkedBlockingDeque;
 
 import org.jboss.netty.channel.Channel;
@@ -42,7 +34,8 @@ import com.google.protobuf.GeneratedMessage;
 
 import eye.Comm.Document;
 import eye.Comm.Header.ReplyStatus;
-import eye.Comm.NameSpace;
+import eye.Comm.Payload;
+import eye.Comm.PayloadReply;
 import eye.Comm.Request;
 import eye.Comm.Response;
 
@@ -282,6 +275,7 @@ public class PerChannelQueue implements ChannelQueue {
 						// handle it locally
 						
 						System.out.println("Here is the routing ID :::> "+ req.getHeader().getRoutingId().getNumber());
+						PayloadReply.Builder payloadReply = PayloadReply.newBuilder();
 						switch (req.getHeader().getRoutingId().getNumber()){
 							case 10:{
 								logger.info("PerChannelQueue: Inbound Creating Name Space");
@@ -294,7 +288,13 @@ public class PerChannelQueue implements ChannelQueue {
 								 FileOps.getInstance().addDocument(req.getBody().getSpace().getName(),req.getBody().getDoc());
 								 break;
 							}
-								
+							
+							case 21:{
+								logger.info("PerChannelQueue: Inbound  Finding Document --> "+ req.getBody().getSpace().getName() +" Has Header ? -> "+ req.hasHeader() +" Has Body ? -> "+ req.hasBody());
+								List<Document> docList = FileOps.getInstance().findDocuments(req.getBody().getSpace().getName(),req.getBody().getDoc());
+								payloadReply.addAllDocs(docList);
+								break;
+							}
 								
 							default:{
 								logger.info("Not Implemented ");
@@ -303,15 +303,16 @@ public class PerChannelQueue implements ChannelQueue {
 						}
 			//AMEYA :::::> Commented to avoid the null header error thrown									
 						Resource rsc = ResourceFactory.getInstance().resourceInstance(req.getHeader());
-									System.out.println("Check if the request is null? ==> "+(rsc == null));
+						
 						Response reply = null;
 						if (rsc == null) {
 							logger.error("failed to obtain resource for " + req);
 							reply = ResourceUtil.buildError(req.getHeader(), ReplyStatus.FAILURE,
 									"Request not processed");
 							
-						} else
-							reply = rsc.process(req);
+						} else {
+							reply = rsc.process(req, payloadReply.build());
+						}
 
 						sq.enqueueResponse(reply);
 					}

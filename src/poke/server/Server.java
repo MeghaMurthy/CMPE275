@@ -148,7 +148,7 @@ public class Server {
 				1024 * 4, 1048576));
 
 		
-		// AMEYA :: bootstrap is a hashmap containting the port number and the serverbootstrap object for the server.
+		// AMEYA :: bootstrap is a hashmap containing the port number and the serverbootstrap object for the server.
 		bootstrap.put(port, bs);
 
 		// Bind and start to accept incoming connections.

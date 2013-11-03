@@ -15,6 +15,7 @@
  */
 package poke.server.resources;
 
+import eye.Comm.PayloadReply;
 import eye.Comm.Request;
 import eye.Comm.Response;
 
@@ -34,6 +35,5 @@ public interface Resource {
 	 * @param request
 	 * @return
 	 */
-	Response process(Request request);
-
+	Response process(Request request, PayloadReply result);
 }
