@@ -44,7 +44,7 @@ public class Jab {
 //		cc.addDoc("TestFolder", 4, "megha", "file_4.txt", "blah blah blah".getBytes());
 //		cc.addDoc("TestFolder", 5, "megha", "file_5.txt", "blah blah blah blah".getBytes());
 
-		cc.getDoc("TestFolder","file_2.txt");
+		cc.getDoc("TestFolder","");
 		
 		
 //		cc.poke(tag, count);

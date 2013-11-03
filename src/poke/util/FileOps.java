@@ -188,7 +188,7 @@ public class FileOps implements Storage {
 					String filename = p.getFileName().toString();
 					String filepath = namespace + "/" + filename;
 					File f = new File(filepath);
-					if (f.isFile()) {
+					if (f.isFile() && !filename.equals(".metadata")) {
 						Document.Builder d = eye.Comm.Document.newBuilder();
 						d.setDocName(filepath);
 						d.setId(findDocId(namespace, criteria.getDocName()));

@@ -190,14 +190,16 @@ public class ClientConnection {
 			ns.setName(namespace);
 			ns.build();
 
-			Document.Builder d = Document.newBuilder();
-			d.setDocName(documentName);
-			
 			// payload containing data
 			eye.Comm.Payload.Builder p = Payload.newBuilder();
 			p.setSpace(ns.build());
-			p.setDoc(d.build());
-			
+
+			if (documentName != null && documentName != "") {
+				Document.Builder d = Document.newBuilder();
+				d.setDocName(documentName);
+				p.setDoc(d.build());
+			}
+
 			Request.Builder r = Request.newBuilder();
 			r.setBody(p.build());
 
