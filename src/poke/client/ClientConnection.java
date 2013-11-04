@@ -218,6 +218,43 @@ public class ClientConnection {
 			logger.warn("Unable to deliver message, queuing");
 		}
 	}
+	
+	//Remove Document
+	public void removeDoc(String nameSpace, long id) {
+
+		try {
+			NameSpace.Builder ns = eye.Comm.NameSpace.newBuilder();
+			ns.setId(10);
+			ns.setName(nameSpace);
+			
+			Document.Builder d = Document.newBuilder();
+			d.setId(id);
+			
+			// payload containing data
+			eye.Comm.Payload.Builder p = Payload.newBuilder();
+			p.setSpace(ns.build());
+			p.setDoc(d.build());
+			
+			// header with routing info
+			eye.Comm.Header.Builder h = Header.newBuilder();
+			h.setOriginator("client");
+			h.setTag("document delete");
+			h.setTime(System.currentTimeMillis());
+			h.setRoutingId(eye.Comm.Header.Routing.DOCREMOVE);
+
+			Request.Builder r = Request.newBuilder();
+			r.setHeader(h.build());
+			r.setBody(p.build());
+
+			eye.Comm.Request req = r.build();
+
+			// enqueue message
+			outbound.put(req);
+
+		} catch (Exception ex) {
+			ex.printStackTrace();
+		}
+	}
 
 	public void addNameSpace(String nameSpace) {
 		try {

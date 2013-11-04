@@ -131,8 +131,31 @@ public class FileOps implements Storage {
 	}
 
 	@Override
-	public boolean removeDocument(String namespace, long docId) {
-		// TODO Auto-generated method stub
+	public boolean removeDocument(String namespace, long docId){
+		
+			try {
+				
+				File file = new File(namespace);
+				if (!file.exists() || file.isFile()) {
+				throw new Exception(
+						"Namespace does not exist or a file exists with the same name");
+				}
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+			
+			String docName;
+			try {
+				docName = findDocName(namespace,docId);
+				String filepath = (namespace + "/" + docName);
+				File f = new File(filepath);
+				f.delete();
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+			
+			
+			
 		return false;
 	}
 

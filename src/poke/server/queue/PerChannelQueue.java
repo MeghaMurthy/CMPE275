@@ -295,6 +295,12 @@ public class PerChannelQueue implements ChannelQueue {
 								payloadReply.addAllDocs(docList);
 								break;
 							}
+							
+							case 23:{
+								logger.info("PerChannelQueue: Inbound  Deleting Document --> "+ req.getBody().getSpace().getName() +" Has Header ? -> "+ req.hasHeader() +" Has Body ? -> "+ req.hasBody());
+								 FileOps.getInstance().removeDocument(req.getBody().getSpace().getName(),req.getBody().getDoc().getId());
+								 break;
+							}
 								
 							default:{
 								logger.info("Not Implemented ");

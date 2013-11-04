@@ -40,11 +40,13 @@ public class Jab {
 		cc.addListener(listener);
 
 //		cc.addDoc("TestFolder", 2, "megha", "file_2.txt", "blah".getBytes());
-//		cc.addDoc("TestFolder", 3, "megha", "file_3.txt", "blah blah".getBytes());
-//		cc.addDoc("TestFolder", 4, "megha", "file_4.txt", "blah blah blah".getBytes());
+		cc.addDoc("TestFolder", 3, "megha", "file_3.txt", "blah blah".getBytes());
+		cc.addDoc("TestFolder", 4, "megha", "file_4.txt", "blah blah blah".getBytes());
 //		cc.addDoc("TestFolder", 5, "megha", "file_5.txt", "blah blah blah blah".getBytes());
+//		cc.addDoc("TestFolder", 6, "megha", "file_6.txt", "blah blah blah blah".getBytes());
 
-		cc.getDoc("TestFolder","");
+		//cc.getDoc("TestFolder","");
+		//cc.removeDoc("TestFolder", 4);
 		
 		
 //		cc.poke(tag, count);
